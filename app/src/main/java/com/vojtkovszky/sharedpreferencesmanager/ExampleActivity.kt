@@ -31,6 +31,8 @@ class ExampleActivity : AppCompatActivity() {
                 json = Json { isLenient = true },
                 logErrors = true
         )
+        // preferencesManager = SharedPreferencesManager(this)
+        // would work too, as other parameters are optional
 
         // populate doggo fields
         val doggo: Dog? = preferencesManager.getObject(KEY_DOGGO)
