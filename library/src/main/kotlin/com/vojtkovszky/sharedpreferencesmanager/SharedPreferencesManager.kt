@@ -18,14 +18,14 @@ import kotlin.Exception
  * @param fileKey Desired preferences file. Defaults to "app_prefs"
  * @param operatingMode Operating mode of preferences file, defaults to [Context.MODE_PRIVATE]
  * @param json Provide your own [Json] instance. Default is "Json { ignoreUnknownKeys = true }"
- * @param logErrors if true, any exceptions thrown while parsing will be printed out
+ * @param errorListener any exceptions thrown while parsing will be invoked using this listener
  */
 class SharedPreferencesManager(
     context: Context,
     fileKey: String = DEFAULT_FILE_KEY,
     operatingMode: Int = DEFAULT_MODE,
-    val json: Json = Json { ignoreUnknownKeys = true },
-    val logErrors: Boolean = true
+    val json: Json = Json,
+    val errorListener: ((e: Exception) -> Unit)? = null
 ) {
 
     companion object {
@@ -94,7 +94,7 @@ class SharedPreferencesManager(
             return try {
                 json.decodeFromString<List<T>>(it)
             } catch (e: Exception) {
-                if (logErrors) e.printStackTrace()
+                errorListener?.invoke(e)
                 defaultValue
             }
         } ?: defaultValue
@@ -110,7 +110,7 @@ class SharedPreferencesManager(
             if (list == null) null
             else json.encodeToString(list)
         } catch (e: Exception) {
-            if (logErrors) e.printStackTrace()
+            errorListener?.invoke(e)
             null
         }
         putString(key, serialized)
@@ -144,7 +144,7 @@ class SharedPreferencesManager(
             return try {
                 json.decodeFromString<T>(it)
             } catch (e: Exception) {
-                if (logErrors) e.printStackTrace()
+                errorListener?.invoke(e)
                 defaultValue
             }
         } ?: defaultValue
@@ -160,7 +160,7 @@ class SharedPreferencesManager(
             if (obj == null) null
             else json.encodeToString(obj)
         } catch (e: Exception) {
-            if (logErrors) e.printStackTrace()
+            errorListener?.invoke(e)
             null
         }
         putString(key, serialized)

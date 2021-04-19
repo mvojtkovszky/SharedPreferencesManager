@@ -29,7 +29,7 @@ class ExampleActivity : AppCompatActivity() {
                 fileKey = "myCustomFileName",
                 operatingMode = Context.MODE_PRIVATE,
                 json = Json { isLenient = true },
-                logErrors = true
+                errorListener = { it.printStackTrace() }
         )
         // preferencesManager = SharedPreferencesManager(this)
         // would work too, as other parameters are optional
