@@ -14,7 +14,7 @@ preferencesManager = SharedPreferencesManager(
                 fileKey = "myCustomFileName",
                 operatingMode = Context.MODE_PRIVATE,
                 json = Json { isLenient = true },
-                logErrors = true
+                errorListener = { it.printStackTrace() }
         )
 ```
 
