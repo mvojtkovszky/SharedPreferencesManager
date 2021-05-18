@@ -14,10 +14,10 @@ import kotlin.Exception
  * All put methods will automatically call [SharedPreferences.edit] concluded with
  * [SharedPreferences.apply].
  *
- * @param context Required to retrieve shared SharedPreferences.
- * @param fileKey Desired preferences file. Defaults to "app_prefs"
- * @param operatingMode Operating mode of preferences file, defaults to [Context.MODE_PRIVATE]
- * @param json Provide your own [Json] instance. Default is "Json { ignoreUnknownKeys = true }"
+ * @param context Required to retrieve [SharedPreferences] within provided context.
+ * @param fileKey Desired preferences file. Defaults to [DEFAULT_FILE_KEY]
+ * @param operatingMode Operating mode of preferences file, defaults to [DEFAULT_MODE]
+ * @param json Provide your own [Json] instance. Defaults to [Json.Default]
  * @param errorListener any exceptions thrown while parsing will be invoked using this listener
  */
 class SharedPreferencesManager(
@@ -46,7 +46,7 @@ class SharedPreferencesManager(
     /**
      * Put [Boolean] into [SharedPreferences] and apply change
      */
-    fun putBoolean(key: String, value: Boolean) {
+    fun setBoolean(key: String, value: Boolean) {
         sharedPreferences.edit().putBoolean(key, value).apply()
     }
     // endregion Boolean
@@ -62,7 +62,7 @@ class SharedPreferencesManager(
     /**
      * Put [Float] into [SharedPreferences] and apply change
      */
-    fun putFloat(key: String, value: Float) {
+    fun setFloat(key: String, value: Float) {
         sharedPreferences.edit().putFloat(key, value).apply()
     }
     // endregion Float
@@ -78,7 +78,7 @@ class SharedPreferencesManager(
     /**
      * Put [Int] into [SharedPreferences] and apply change
      */
-    fun putInt(key: String, value: Int) {
+    fun setInt(key: String, value: Int) {
         sharedPreferences.edit().putInt(key, value).apply()
     }
     // endregion Int
@@ -105,7 +105,7 @@ class SharedPreferencesManager(
      * Note that [T] has to be annotated as [Serializable] or key will be null-ed due to
      * caught [SerializationException] while  encoding [List] to [String].
      */
-    inline fun <reified T: Any> putList(key: String, list: List<T>?) {
+    inline fun <reified T: Any> setList(key: String, list: List<T>?) {
         val serialized = try {
             if (list == null) null
             else json.encodeToString(list)
@@ -113,7 +113,7 @@ class SharedPreferencesManager(
             errorListener?.invoke(e)
             null
         }
-        putString(key, serialized)
+        setString(key, serialized)
     }
     // endregion List
 
@@ -128,7 +128,7 @@ class SharedPreferencesManager(
     /**
      * Put [Long] into [SharedPreferences] and apply change
      */
-    fun putLong(key: String, value: Long) {
+    fun setLong(key: String, value: Long) {
         sharedPreferences.edit().putLong(key, value).apply()
     }
     // endregion Long
@@ -155,7 +155,7 @@ class SharedPreferencesManager(
      * Note that [T] has to be annotated as [Serializable] or key will be null-ed due to
      * caught [SerializationException] while encoding [T] to [String].
      */
-    inline fun <reified T: Any> putObject(key: String, obj: T?) {
+    inline fun <reified T: Any> setObject(key: String, obj: T?) {
         val serialized = try {
             if (obj == null) null
             else json.encodeToString(obj)
@@ -163,7 +163,7 @@ class SharedPreferencesManager(
             errorListener?.invoke(e)
             null
         }
-        putString(key, serialized)
+        setString(key, serialized)
     }
     // endregion Object
 
@@ -178,7 +178,7 @@ class SharedPreferencesManager(
     /**
      * Put [String] into [SharedPreferences] and apply change
      */
-    fun putString(key: String, value: String?) {
+    fun setString(key: String, value: String?) {
         sharedPreferences.edit().putString(key, value).apply()
     }
     // endregion String
@@ -194,7 +194,7 @@ class SharedPreferencesManager(
     /**
      * Put [MutableSet] of [String] into [SharedPreferences] and apply change
      */
-    fun putStringSet(key: String, value: MutableSet<String>?) {
+    fun setStringSet(key: String, value: MutableSet<String>?) {
         sharedPreferences.edit().putStringSet(key, value).apply()
     }
     // endregion StringSet
