@@ -46,7 +46,7 @@ class ExampleActivity : AppCompatActivity() {
         // save changes
         binding.saveButton.setOnClickListener {
             // save doggo based on edit texts
-            preferencesManager.putObject(KEY_DOGGO,
+            preferencesManager.setObject(KEY_DOGGO,
                     Dog(
                             name = binding.doggoName.text.toString(),
                             breed = binding.doggoBreed.text.toString(),
@@ -55,7 +55,7 @@ class ExampleActivity : AppCompatActivity() {
             )
 
             // save checkbox state
-            preferencesManager.putBoolean(KEY_CHECKBOX, binding.randomCheckbox.isChecked)
+            preferencesManager.setBoolean(KEY_CHECKBOX, binding.randomCheckbox.isChecked)
 
             // show success to user
             Toast.makeText(this@ExampleActivity, "Preferences updated!", Toast.LENGTH_LONG).show()
