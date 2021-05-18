@@ -21,21 +21,21 @@ preferencesManager = SharedPreferencesManager(
 2. Use any of the public methods to retrieve or save data. Any put call automatically applies changes.
 ``` kotlin
 fun getBoolean(key: String, defaultValue: Boolean): Boolean
-fun putBoolean(key: String, value: Boolean)
+fun setBoolean(key: String, value: Boolean)
 fun getFloat(key: String, defaultValue: Float = 0f): Float
-fun putFloat(key: String, value: Float)
+fun setFloat(key: String, value: Float)
 fun getInt(key: String, defaultValue: Int = 0): Int
-fun putInt(key: String, value: Int)
+fun setInt(key: String, value: Int)
 fun getList(key: String, defaultValue: List<T>? = null): List<T>?
-fun putList(key: String, list: List<T>?)
+fun setList(key: String, list: List<T>?)
 fun getLong(key: String, defaultValue: Long = 0L): Long
-fun putLong(key: String, value: Long)
+fun setLong(key: String, value: Long)
 fun getObject(key: String, defaultValue: T? = null) : T?
-fun putObject(key: String, obj: T?)
+fun setObject(key: String, obj: T?)
 fun getString(key: String, defaultValue: String?): String?
-fun putString(key: String, value: String?)
+fun setString(key: String, value: String?)
 fun getStringSet(key: String, defaultValue: MutableSet<String>?): MutableSet<String>?
-fun putStringSet(key: String, value: MutableSet<String>?)
+fun setStringSet(key: String, value: MutableSet<String>?)
 fun clearData()
 fun getAll(): MutableMap<String, *>?
 fun remove(key: String)
