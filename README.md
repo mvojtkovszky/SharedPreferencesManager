@@ -10,12 +10,12 @@ preferencesManager = SharedPreferencesManager(applicationContext)
 or if you require more options, you could do something like
 ``` kotlin
 preferencesManager = SharedPreferencesManager(
-                context = applicationContext,
-                fileKey = "myCustomFileName",
-                operatingMode = Context.MODE_PRIVATE,
-                json = Json { isLenient = true },
-                errorListener = { it.printStackTrace() }
-        )
+    context = applicationContext,
+    fileKey = "myCustomFileName",
+    operatingMode = Context.MODE_PRIVATE,
+    json = Json { isLenient = true },
+    errorListener = { it.printStackTrace() }
+)
 ```
 
 2. Use any of the public methods to retrieve or save data. Any put call automatically applies changes.
