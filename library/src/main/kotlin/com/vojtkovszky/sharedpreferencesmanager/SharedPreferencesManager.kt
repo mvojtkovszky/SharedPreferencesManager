@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package com.vojtkovszky.sharedpreferencesmanager
 
@@ -14,26 +14,17 @@ import kotlin.Exception
  * All put methods will automatically call [SharedPreferences.edit] concluded with
  * [SharedPreferences.apply].
  *
- * @param context Required to retrieve [SharedPreferences] within provided context.
- * @param fileKey Desired preferences file. Defaults to [DEFAULT_FILE_KEY]
- * @param operatingMode Operating mode of preferences file, defaults to [DEFAULT_MODE]
- * @param json Provide your own [Json] instance. Defaults to [Json.Default]
+ * @param sharedPreferences provide your implementation of [SharedPreferences].
+ * Usually it would be [Context.getSharedPreferences].
+ * If persisting data in file is not desired, provide [InMemorySharedPreferences].
+ * @param json Provide your own [Json] instance used for serialization of custom objects. Defaults to [Json.Default]
  * @param errorListener any exceptions thrown while parsing will be invoked using this listener
  */
 class SharedPreferencesManager(
-    context: Context,
-    fileKey: String = DEFAULT_FILE_KEY,
-    operatingMode: Int = DEFAULT_MODE,
+    val sharedPreferences: SharedPreferences,
     val json: Json = Json,
     val errorListener: ((e: Exception) -> Unit)? = null
 ) {
-
-    companion object {
-        const val DEFAULT_FILE_KEY = "app_prefs"
-        const val DEFAULT_MODE = Context.MODE_PRIVATE
-    }
-
-    private val sharedPreferences = context.applicationContext.getSharedPreferences(fileKey, operatingMode)
 
     // region Boolean
     /**
@@ -171,7 +162,7 @@ class SharedPreferencesManager(
     /**
      * Will return [SharedPreferences.getString]
      */
-    fun getString(key: String, defaultValue: String?): String? {
+    fun getString(key: String, defaultValue: String? = null): String? {
         return sharedPreferences.getString(key, defaultValue) ?: defaultValue
     }
 
@@ -187,7 +178,7 @@ class SharedPreferencesManager(
     /**
      * Will return [SharedPreferences.getStringSet]
      */
-    fun getStringSet(key: String, defaultValue: MutableSet<String>?): MutableSet<String>? {
+    fun getStringSet(key: String, defaultValue: MutableSet<String>? = null): MutableSet<String>? {
         return sharedPreferences.getStringSet(key, defaultValue) ?: defaultValue
     }
 
