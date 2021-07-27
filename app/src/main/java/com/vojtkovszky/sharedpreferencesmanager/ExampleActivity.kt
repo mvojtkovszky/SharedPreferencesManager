@@ -24,12 +24,11 @@ class ExampleActivity : AppCompatActivity() {
         binding = ActivityExampleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val sharedPreferences = applicationContext.getSharedPreferences("myCustomFileName", Context.MODE_PRIVATE)
         preferencesManager = SharedPreferencesManager(
-                context = applicationContext,
-                fileKey = "myCustomFileName",
-                operatingMode = Context.MODE_PRIVATE,
-                json = Json { isLenient = true },
-                errorListener = { it.printStackTrace() }
+            sharedPreferences = sharedPreferences,
+            json = Json { isLenient = true },
+            errorListener = { it.printStackTrace() }
         )
         // preferencesManager = SharedPreferencesManager(this)
         // would work too, as other parameters are optional
@@ -47,11 +46,11 @@ class ExampleActivity : AppCompatActivity() {
         binding.saveButton.setOnClickListener {
             // save doggo based on edit texts
             preferencesManager.setObject(KEY_DOGGO,
-                    Dog(
-                            name = binding.doggoName.text.toString(),
-                            breed = binding.doggoBreed.text.toString(),
-                            weightGrams = binding.doggoWeight.text.toString().toIntOrNull() ?: 0
-                    )
+                Dog(
+                    name = binding.doggoName.text.toString(),
+                    breed = binding.doggoBreed.text.toString(),
+                    weightGrams = binding.doggoWeight.text.toString().toIntOrNull() ?: 0
+                )
             )
 
             // save checkbox state

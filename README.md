@@ -1,21 +1,31 @@
 # SharedPreferencesManager
-Simplifies use of Android's SharedPreferences and allows storing of objects and list of objects.
+Simplifies use of Android's SharedPreferences and allows storing of custom objects and list of objects.
 
 ## How does it work?
-1. Create an instance of SharedPreferencesManager
+1. Create an instance of Android's `SharedPreferences`
 ``` kotlin
-preferencesManager = SharedPreferencesManager(applicationContext)
+val sharedPreferences = applicationContext.getSharedPreferences("myCustomFileName", Context.MODE_PRIVATE)
+```
+
+1. Create an instance of `SharedPreferencesManager` with it.
+``` kotlin
+preferencesManager = SharedPreferencesManager(sharedPreferences)
 ```
 
 or if you require more options, you could do something like
 ``` kotlin
 preferencesManager = SharedPreferencesManager(
-    context = applicationContext,
-    fileKey = "myCustomFileName",
-    operatingMode = Context.MODE_PRIVATE,
+    sharedPreferences = sharedPreferences
     json = Json { isLenient = true },
     errorListener = { it.printStackTrace() }
 )
+```
+
+additionally, you can use provided `InMemorySharedPreferences`. This will persist all data in memory 
+only and omit using files. Useful for testing without mocking the context or if there is no need to 
+persist data outside of application lifecycle.
+``` kotlin
+val sharedPreferences = InMemorySharedPreferences()
 ```
 
 2. Use any of the public methods to retrieve or save data. Any put call automatically applies changes.
@@ -41,8 +51,8 @@ fun getAll(): MutableMap<String, *>?
 fun remove(key: String)
 ```
 
-Note that [getObject], [putObject], [getList] and [putList] use Kotlin serialization, so [T] has to be
-annotated as [Serializable], otherwise [SerializationException] will be thrown.
+Note that `getObject`, `putObject`, `getList` and `putList` use Kotlin serialization, so `T` has to be
+annotated as `Serializable`, otherwise `SerializationException` will be thrown.
 
 
 ## Nice! How do I get started?
