@@ -12,11 +12,17 @@ import android.content.SharedPreferences
 class InMemorySharedPreferences: SharedPreferences {
 
     // acting as repository
+    @Volatile
     private var booleansMap: MutableMap<String, Boolean> = mutableMapOf()
+    @Volatile
     private var floatsMap: MutableMap<String, Float> = mutableMapOf()
+    @Volatile
     private var intsMap: MutableMap<String, Int> = mutableMapOf()
+    @Volatile
     private var longMap: MutableMap<String, Long> = mutableMapOf()
+    @Volatile
     private var stringsMap: MutableMap<String, String?> = mutableMapOf()
+    @Volatile
     private var stringsSetMap: MutableMap<String, MutableSet<String>?> = mutableMapOf()
 
     // change listeners
@@ -62,7 +68,7 @@ class InMemorySharedPreferences: SharedPreferences {
     }
 
     override fun edit(): SharedPreferences.Editor {
-        return LocalEditor()
+        return InMemoryEditor()
     }
 
     override fun registerOnSharedPreferenceChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener?) {
@@ -82,7 +88,7 @@ class InMemorySharedPreferences: SharedPreferences {
     /**
      * Implementation of editor that doesn't rely on file storage.
      */
-    inner class LocalEditor: SharedPreferences.Editor {
+    internal inner class InMemoryEditor: SharedPreferences.Editor {
 
         private val booleansMap: MutableMap<String, Boolean> = this@InMemorySharedPreferences.booleansMap
         private val floatsMap: MutableMap<String, Float> = this@InMemorySharedPreferences.floatsMap
@@ -143,14 +149,20 @@ class InMemorySharedPreferences: SharedPreferences {
 
         override fun remove(key: String?): SharedPreferences.Editor {
             key?.let {
-                booleansMap.remove(it)
-                floatsMap.remove(it)
-                intsMap.remove(it)
-                longMap.remove(it)
-                stringsMap.remove(it)
-                stringsSetMap.remove(it)
+                // keep track if key actually removed
+                var keyRemoved = false
 
-                changedKeys.add(it)
+                booleansMap.remove(it).also { value -> keyRemoved = keyRemoved || value != null }
+                floatsMap.remove(it).also { value -> keyRemoved = keyRemoved || value != null }
+                intsMap.remove(it).also { value -> keyRemoved = keyRemoved || value != null }
+                longMap.remove(it).also { value -> keyRemoved = keyRemoved || value != null }
+                stringsMap.remove(it).also { value -> keyRemoved = keyRemoved || value != null }
+                stringsSetMap.remove(it).also { value -> keyRemoved = keyRemoved || value != null }
+
+                // only added to changed if removed
+                if (keyRemoved) {
+                    changedKeys.add(it)
+                }
             }
             return this
         }
@@ -174,19 +186,20 @@ class InMemorySharedPreferences: SharedPreferences {
         }
 
         override fun commit(): Boolean {
+            // since we don't deal with file storage, this is completely identical to apply()
             apply()
             return true
         }
 
         override fun apply() {
-            this@InMemorySharedPreferences.booleansMap = this@LocalEditor.booleansMap
-            this@InMemorySharedPreferences.floatsMap = this@LocalEditor.floatsMap
-            this@InMemorySharedPreferences.intsMap = this@LocalEditor.intsMap
-            this@InMemorySharedPreferences.longMap = this@LocalEditor.longMap
-            this@InMemorySharedPreferences.stringsMap = this@LocalEditor.stringsMap
-            this@InMemorySharedPreferences.stringsSetMap = this@LocalEditor.stringsSetMap
+            this@InMemorySharedPreferences.booleansMap = this@InMemoryEditor.booleansMap
+            this@InMemorySharedPreferences.floatsMap = this@InMemoryEditor.floatsMap
+            this@InMemorySharedPreferences.intsMap = this@InMemoryEditor.intsMap
+            this@InMemorySharedPreferences.longMap = this@InMemoryEditor.longMap
+            this@InMemorySharedPreferences.stringsMap = this@InMemoryEditor.stringsMap
+            this@InMemorySharedPreferences.stringsSetMap = this@InMemoryEditor.stringsSetMap
 
-            // distribute change listeners
+            // invoke change listeners
             for (listener in changeListeners) {
                 for (changedKey in changedKeys) {
                     listener.onSharedPreferenceChanged(this@InMemorySharedPreferences, changedKey)
@@ -194,6 +207,5 @@ class InMemorySharedPreferences: SharedPreferences {
             }
             changeListeners.clear()
         }
-
     }
 }
