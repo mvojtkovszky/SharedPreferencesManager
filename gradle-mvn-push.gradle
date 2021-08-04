@@ -17,7 +17,7 @@ def getPublicationName() {
 }
 
 task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
-    archiveClassifier.set('sources')
+    archiveClassifier.set('javadoc')
     from "$buildDir/dokka/javadoc"
 }
 
@@ -28,7 +28,7 @@ publishing {
             artifactId project.properties['artifactId']
             version project.properties['versionName']
             artifact getArtifactFilePath()
-            artifact tasks.javadocJar
+            artifact javadocJar
 
             // include project dependencies
             pom.withXml {
@@ -42,4 +42,8 @@ publishing {
             }
         }
     }
+}
+
+artifacts {
+    archives javadocJar
 }
