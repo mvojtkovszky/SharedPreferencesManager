@@ -1,0 +1,45 @@
+apply plugin: 'maven-publish'
+
+def isReleaseBuild() {
+    return !project.properties['version'].contains("SNAPSHOT")
+}
+
+def getArtifactFilePath() {
+    return "$buildDir/outputs/aar/${project.properties['moduleId']}-${getPublicationName()}.aar"
+}
+
+def getPublicationName() {
+    if (isReleaseBuild()) {
+        return "release"
+    } else {
+        return "debug"
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+    archiveClassifier.set('sources')
+    from "$buildDir/dokka/javadoc"
+}
+
+publishing {
+    publications {
+        "${getPublicationName()}" (MavenPublication) {
+            groupId project.properties['groupId']
+            artifactId project.properties['artifactId']
+            version project.properties['versionName']
+            artifact getArtifactFilePath()
+            artifact tasks.javadocJar
+
+            // include project dependencies
+            pom.withXml {
+                def dependencies = asNode().appendNode('dependencies')
+                configurations.getByName("${getPublicationName()}CompileClasspath").getResolvedConfiguration().getFirstLevelModuleDependencies().each {
+                    def dependency = dependencies.appendNode('dependency')
+                    dependency.appendNode('groupId', it.moduleGroup)
+                    dependency.appendNode('artifactId', it.moduleName)
+                    dependency.appendNode('version', it.moduleVersion)
+                }
+            }
+        }
+    }
+}
