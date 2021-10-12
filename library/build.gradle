@@ -13,7 +13,6 @@ android {
     defaultConfig {
         minSdkVersion project.properties['minSdkVersion'] as Integer
         targetSdkVersion project.properties['targetSdkVersion'] as Integer
-        versionName project.properties['versionName'] as String
     }
 
     sourceSets {
@@ -32,7 +31,7 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2" /* https://github.com/Kotlin/kotlinx.serialization */
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0" /* https://github.com/Kotlin/kotlinx.serialization */
 }
 
 apply from: "$rootDir/gradle-mvn-push.gradle"

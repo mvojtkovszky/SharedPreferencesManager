@@ -21,6 +21,11 @@ task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
     from "$buildDir/dokka/javadoc"
 }
 
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+
 publishing {
     publications {
         "${getPublicationName()}" (MavenPublication) {
@@ -29,6 +34,7 @@ publishing {
             version project.properties['versionName']
             artifact getArtifactFilePath()
             artifact javadocJar
+            artifact sourcesJar
 
             // include project dependencies
             pom.withXml {
@@ -46,4 +52,5 @@ publishing {
 
 artifacts {
     archives javadocJar
+    archives sourcesJar
 }
