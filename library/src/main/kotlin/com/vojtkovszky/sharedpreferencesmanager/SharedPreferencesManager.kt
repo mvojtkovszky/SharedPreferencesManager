@@ -26,6 +26,11 @@ class SharedPreferencesManager(
     val errorListener: ((e: Exception) -> Unit)? = null
 ) {
 
+    @PublishedApi
+    internal val cachedObjects: MutableMap<String, Any> = mutableMapOf()
+    @PublishedApi
+    internal val cachedLists: MutableMap<String, List<Any>> = mutableMapOf()
+
     // region Boolean
     /**
      * Will return [SharedPreferences.getBoolean]
@@ -81,9 +86,27 @@ class SharedPreferencesManager(
      * caught [SerializationException] while decoding [List] from [String].
      */
     inline fun <reified T: Any> getList(key: String, defaultValue: List<T>? = null): List<T>? {
+        // return cached if exists so we don't have to repeat serializing
+        if (cachedLists.containsKey(key)) {
+            cachedLists[key].let {
+                // this casting might fail if we try and write two different list types under
+                // the same key. Invoke error in this case
+                return try {
+                    @Suppress("UNCHECKED_CAST")
+                    it as List<T>?
+                } catch (e: Exception) {
+                    errorListener?.invoke(e)
+                    defaultValue
+                }
+            }
+        }
+
         return getString(key, null)?.let {
             return try {
-                json.decodeFromString<List<T>>(it)
+                json.decodeFromString<List<T>>(it).also { decodedList ->
+                    // cache the decoded object
+                    cachedLists[key] = decodedList
+                }
             } catch (e: Exception) {
                 errorListener?.invoke(e)
                 defaultValue
@@ -104,7 +127,13 @@ class SharedPreferencesManager(
             errorListener?.invoke(e)
             null
         }
-        setString(key, serialized)
+
+        setString(key, serialized).also {
+            // cache when setting
+            if (list != null) {
+                cachedLists[key] = list
+            }
+        }
     }
     // endregion List
 
@@ -131,9 +160,26 @@ class SharedPreferencesManager(
      * caught [SerializationException] while decoding [T] from [String].
      */
     inline fun <reified T: Any> getObject(key: String, defaultValue: T? = null) : T? {
+        // return cached if exists so we don't have to repeat serializing
+        if (cachedObjects.containsKey(key)) {
+            // this casting might fail if we try and write two different list types under
+            // the same key. Invoke error in this case
+            cachedObjects[key].let {
+                return try {
+                    it as T?
+                } catch (e: Exception) {
+                    errorListener?.invoke(e)
+                    defaultValue
+                }
+            }
+        }
+
         return getString(key, null)?.let {
             return try {
-                json.decodeFromString<T>(it)
+                json.decodeFromString<T>(it).also { decodedObject ->
+                    // cache the decoded object
+                    cachedObjects[key] = decodedObject
+                }
             } catch (e: Exception) {
                 errorListener?.invoke(e)
                 defaultValue
@@ -154,7 +200,13 @@ class SharedPreferencesManager(
             errorListener?.invoke(e)
             null
         }
-        setString(key, serialized)
+
+        setString(key, serialized).also {
+            // cache when setting
+            if (obj != null) {
+                cachedObjects[key] = obj
+            }
+        }
     }
     // endregion Object
 
