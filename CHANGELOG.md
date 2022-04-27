@@ -1,9 +1,10 @@
 # CHANGELOG
 
 ## 1.5.0 (2022-04-27
-* add getObjectAsync and getListAsync
+* add `getObjectAsync` and `getListAsync`
 * serialized objects and lists are now cached in memory to avoid redundant deserialization
 * bump Kotlin to 1.6.21, Serialization to 1.3.2, Gradle plugin to 7.1.3
+* bump buildToolsVersion to 32.0.0, compileSdkVersion and targetSdkVersion to 32
 
 ## 1.4.0 (2021-10-12)
 * bump serialization-json to 1.3.0
