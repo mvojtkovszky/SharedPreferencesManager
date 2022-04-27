@@ -138,9 +138,11 @@ class SharedPreferencesManager(
      * caught [SerializationException] while  encoding [List] to [String].
      */
     inline fun <reified T: Any> setList(key: String, list: List<T>?) {
-        // cache immediately
+        // update cache immediately
         if (list != null) {
             cachedLists[key] = list
+        } else {
+            cachedLists.remove(key)
         }
 
         // serialize and apply to disk in the background
@@ -230,9 +232,11 @@ class SharedPreferencesManager(
      * caught [SerializationException] while encoding [T] to [String].
      */
     inline fun <reified T: Any> setObject(key: String, obj: T?) {
-        // cache immediately
+        // update cache immediately
         if (obj != null) {
             cachedObjects[key] = obj
+        } else {
+            cachedObjects.remove(key)
         }
 
         thread(start = true) {

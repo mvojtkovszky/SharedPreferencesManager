@@ -1,7 +1,7 @@
 # CHANGELOG
 
 ## 1.5.1 (TBD)
-*
+* fix issue where memory state won't update if null is passed to `setObject` or `setList`
 
 ## 1.5.0 (2022-04-27)
 * add `getObjectAsync` and `getListAsync`
