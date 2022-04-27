@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 import kotlin.Exception
+import kotlin.concurrent.thread
 
 /**
  * Class handling persistence of data using [SharedPreferences] .
@@ -25,6 +26,11 @@ class SharedPreferencesManager(
     val json: Json = Json,
     val errorListener: ((e: Exception) -> Unit)? = null
 ) {
+
+    @PublishedApi
+    internal val cachedObjects: MutableMap<String, Any> = mutableMapOf()
+    @PublishedApi
+    internal val cachedLists: MutableMap<String, List<Any>> = mutableMapOf()
 
     // region Boolean
     /**
@@ -79,11 +85,33 @@ class SharedPreferencesManager(
      * Retrieve [List] from [SharedPreferences], stored as serialized json string.
      * Note that [T] has to be annotated as [Serializable] or result will be null due to
      * caught [SerializationException] while decoding [List] from [String].
+     *
+     * Note that this method may include json deserialization, especially when fetching the existing
+     * value for the first time, which might block the UI thread. If that is the issue, consider
+     * using [getListAsync] instead.
      */
     inline fun <reified T: Any> getList(key: String, defaultValue: List<T>? = null): List<T>? {
+        // return cached if exists so we don't have to repeat serializing
+        if (cachedLists.containsKey(key)) {
+            cachedLists[key].let {
+                // this casting might fail if we try and write two different list types under
+                // the same key. Invoke error in this case
+                return try {
+                    @Suppress("UNCHECKED_CAST")
+                    it as List<T>?
+                } catch (e: Exception) {
+                    errorListener?.invoke(e)
+                    defaultValue
+                }
+            }
+        }
+
         return getString(key, null)?.let {
             return try {
-                json.decodeFromString<List<T>>(it)
+                json.decodeFromString<List<T>>(it).also { decodedList ->
+                    // cache the decoded object
+                    cachedLists[key] = decodedList
+                }
             } catch (e: Exception) {
                 errorListener?.invoke(e)
                 defaultValue
@@ -92,19 +120,40 @@ class SharedPreferencesManager(
     }
 
     /**
+     * Same as [getList] but result is reported via callback and will not block the UI thread,
+     * which is a potential issue when reading a large object for the first time, as deserialization
+     * process will need to take place.
+     */
+    inline fun <reified T: Any> getListAsync(
+        key: String, defaultValue: List<T>? = null, crossinline callback: (List<T>?) -> Unit
+    ) {
+        thread(start = true) {
+            callback.invoke(getList(key, defaultValue))
+        }
+    }
+
+    /**
      * Put [List] into [SharedPreferences] as serialized json string and apply change.
      * Note that [T] has to be annotated as [Serializable] or key will be null-ed due to
      * caught [SerializationException] while  encoding [List] to [String].
      */
     inline fun <reified T: Any> setList(key: String, list: List<T>?) {
-        val serialized = try {
-            if (list == null) null
-            else json.encodeToString(list)
-        } catch (e: Exception) {
-            errorListener?.invoke(e)
-            null
+        // cache immediately
+        if (list != null) {
+            cachedLists[key] = list
         }
-        setString(key, serialized)
+
+        // serialize and apply to disk in the background
+        thread(start = true) {
+            val serialized = try {
+                if (list == null) null
+                else json.encodeToString(list)
+            } catch (e: Exception) {
+                errorListener?.invoke(e)
+                null
+            }
+            setString(key, serialized)
+        }
     }
     // endregion List
 
@@ -129,11 +178,32 @@ class SharedPreferencesManager(
      * Retrieve an object [T] from [SharedPreferences], stored as serialized json string.
      * Note that [T] has to be annotated as [Serializable] or result will be null due to
      * caught [SerializationException] while decoding [T] from [String].
+     *
+     * Note that this method may include json deserialization, especially when fetching the existing
+     * value for the first time, which might block the UI thread. If that is the issue, consider
+     * using [getObjectAsync] instead.
      */
     inline fun <reified T: Any> getObject(key: String, defaultValue: T? = null) : T? {
+        // return cached if exists so we don't have to repeat serializing
+        if (cachedObjects.containsKey(key)) {
+            // this casting might fail if we try and write two different list types under
+            // the same key. Invoke error in this case
+            cachedObjects[key].let {
+                return try {
+                    it as T?
+                } catch (e: Exception) {
+                    errorListener?.invoke(e)
+                    defaultValue
+                }
+            }
+        }
+
         return getString(key, null)?.let {
             return try {
-                json.decodeFromString<T>(it)
+                json.decodeFromString<T>(it).also { decodedObject ->
+                    // cache the decoded object
+                    cachedObjects[key] = decodedObject
+                }
             } catch (e: Exception) {
                 errorListener?.invoke(e)
                 defaultValue
@@ -142,19 +212,45 @@ class SharedPreferencesManager(
     }
 
     /**
+     * Same as [getObject] but result is reported via callback and will not block the UI thread,
+     * which is a potential issue when reading a large object for the first time, as deserialization
+     * process will need to take place.
+     */
+    inline fun <reified T: Any> getObjectAsync(
+        key: String, defaultValue: T? = null, crossinline callback: (T?) -> Unit
+    ) {
+        thread(start = true) {
+            callback.invoke(getObject(key, defaultValue))
+        }
+    }
+
+    /**
      * Put an object [T] into [SharedPreferences] as serialized json string and apply the change.
      * Note that [T] has to be annotated as [Serializable] or key will be null-ed due to
      * caught [SerializationException] while encoding [T] to [String].
      */
     inline fun <reified T: Any> setObject(key: String, obj: T?) {
-        val serialized = try {
-            if (obj == null) null
-            else json.encodeToString(obj)
-        } catch (e: Exception) {
-            errorListener?.invoke(e)
-            null
+        // cache immediately
+        if (obj != null) {
+            cachedObjects[key] = obj
         }
-        setString(key, serialized)
+
+        thread(start = true) {
+            val serialized = try {
+                if (obj == null) null
+                else json.encodeToString(obj)
+            } catch (e: Exception) {
+                errorListener?.invoke(e)
+                null
+            }
+
+            setString(key, serialized).also {
+                // cache when setting
+                if (obj != null) {
+                    cachedObjects[key] = obj
+                }
+            }
+        }
     }
     // endregion Object
 

@@ -37,10 +37,12 @@ fun setFloat(key: String, value: Float)
 fun getInt(key: String, defaultValue: Int = 0): Int
 fun setInt(key: String, value: Int)
 fun getList(key: String, defaultValue: List<T>? = null): List<T>?
+fun getListAsync(key: String, defaultValue: T? = null, callback: (List<T>?) -> Unit)
 fun setList(key: String, list: List<T>?)
 fun getLong(key: String, defaultValue: Long = 0L): Long
 fun setLong(key: String, value: Long)
 fun getObject(key: String, defaultValue: T? = null) : T?
+fun getObjectAsync(key: String, defaultValue: T? = null, callback: (T?) -> Unit)
 fun setObject(key: String, obj: T?)
 fun getString(key: String, defaultValue: String?): String?
 fun setString(key: String, value: String?)
