@@ -1,6 +1,9 @@
 # CHANGELOG
 
-## 1.5.1 (TBD)
+## 1.5.2 (TBD)
+*
+
+## 1.5.1 (2022-04-29)
 * fix issue where memory state won't update if null is passed to `setObject` or `setList`
 
 ## 1.5.0 (2022-04-27)
