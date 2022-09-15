@@ -39,11 +39,13 @@ fun setInt(key: String, value: Int)
 fun getList(key: String, defaultValue: List<T>? = null): List<T>?
 fun getListAsync(key: String, defaultValue: T? = null, callback: (List<T>?) -> Unit)
 fun setList(key: String, list: List<T>?)
+fun setListAsync(key: String, list: List<T>?, callback: () -> Unit)
 fun getLong(key: String, defaultValue: Long = 0L): Long
 fun setLong(key: String, value: Long)
 fun getObject(key: String, defaultValue: T? = null) : T?
 fun getObjectAsync(key: String, defaultValue: T? = null, callback: (T?) -> Unit)
 fun setObject(key: String, obj: T?)
+fun setObjectAsync(key: String, obj: T?, callback: () -> Unit)
 fun getString(key: String, defaultValue: String?): String?
 fun setString(key: String, value: String?)
 fun getStringSet(key: String, defaultValue: MutableSet<String>?): MutableSet<String>?
