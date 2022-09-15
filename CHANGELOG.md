@@ -1,6 +1,12 @@
 # CHANGELOG
 
-## 1.5.1 (TBD)
+## 1.5.2 (2022-09-15)
+* remove threading in `setList` and `setObject` and 
+  add it to convenience functions `setListAsync` and `setObjectAsync`
+* bump Kotlin to 1.7.10, Serialization to 1.4.0, Gradle plugin to 7.2.2
+* bump buildToolsVersion to 33.0.0, compileSdkVersion and targetSdkVersion to 33
+
+## 1.5.1 (2022-04-29)
 * fix issue where memory state won't update if null is passed to `setObject` or `setList`
 
 ## 1.5.0 (2022-04-27)
