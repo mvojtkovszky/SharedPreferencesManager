@@ -146,15 +146,23 @@ class SharedPreferencesManager(
         }
 
         // serialize and apply to disk in the background
+        val serialized = try {
+            if (list == null) null
+            else json.encodeToString(list)
+        } catch (e: Exception) {
+            errorListener?.invoke(e)
+            null
+        }
+        setString(key, serialized)
+    }
+
+    /**
+     * Calls [setList] in a background thread and invokes [callback] when complete
+     */
+    inline fun <reified T: Any> setListAsync(key: String, list: List<T>?, crossinline callback: () -> Unit) {
         thread(start = true) {
-            val serialized = try {
-                if (list == null) null
-                else json.encodeToString(list)
-            } catch (e: Exception) {
-                errorListener?.invoke(e)
-                null
-            }
-            setString(key, serialized)
+            setList(key, list)
+            callback.invoke()
         }
     }
     // endregion List
@@ -239,21 +247,29 @@ class SharedPreferencesManager(
             cachedObjects.remove(key)
         }
 
-        thread(start = true) {
-            val serialized = try {
-                if (obj == null) null
-                else json.encodeToString(obj)
-            } catch (e: Exception) {
-                errorListener?.invoke(e)
-                null
-            }
+        val serialized = try {
+            if (obj == null) null
+            else json.encodeToString(obj)
+        } catch (e: Exception) {
+            errorListener?.invoke(e)
+            null
+        }
 
-            setString(key, serialized).also {
-                // cache when setting
-                if (obj != null) {
-                    cachedObjects[key] = obj
-                }
+        setString(key, serialized).also {
+            // cache when setting
+            if (obj != null) {
+                cachedObjects[key] = obj
             }
+        }
+    }
+
+    /**
+     * Calls [setObject] in a background thread and invokes [callback] when complete
+     */
+    inline fun <reified T: Any> setObjectAsync(key: String, obj: T?, crossinline callback: () -> Unit) {
+        thread(start = true) {
+            setObject(key, obj)
+            callback.invoke()
         }
     }
     // endregion Object
