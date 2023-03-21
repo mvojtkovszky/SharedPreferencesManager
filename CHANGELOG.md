@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 1.5.3 (TBD)
+*
+
 ## 1.5.2 (2022-09-15)
 * remove threading in `setList` and `setObject` and 
   add it to convenience functions `setListAsync` and `setObjectAsync`

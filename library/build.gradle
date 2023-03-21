@@ -7,6 +7,7 @@ plugins {
 }
 
 android {
+    namespace 'com.vojtkovszky.preferencemanager'
     compileSdkVersion project.properties['compileSdkVersion'] as Integer
     buildToolsVersion project.properties['buildToolsVersion'] as String
 
@@ -31,7 +32,7 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0" /* https://github.com/Kotlin/kotlinx.serialization */
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0" /* https://github.com/Kotlin/kotlinx.serialization */
 }
 
 apply from: "$rootDir/gradle-mvn-push.gradle"
