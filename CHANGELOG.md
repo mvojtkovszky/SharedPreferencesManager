@@ -1,8 +1,12 @@
 # CHANGELOG
 
-## 1.5.3 (TBD)
+## 1.5.4 (2023-08-25)
 * bump Gradle plugin to 8.1.1, Serialization to 1.6.0
 * bump buildToolsVersion 34.0.0, targetSdkVersion, compileSdkVersion to 34
+
+## 1.5.2 (2023-03-21)
+* bump kotlin to 1.8.0, Gradle plugin to 7.4.2, Serialization to 1.5.0
+* buildToolsVersion to 33.0.2
 
 ## 1.5.2 (2022-09-15)
 * remove threading in `setList` and `setObject` and 
