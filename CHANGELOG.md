@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 1.5.5 (TBD)
+* 
+
 ## 1.5.4 (2023-08-25)
 * bump Gradle plugin to 8.1.1, Serialization to 1.6.0
 * bump buildToolsVersion 34.0.0, targetSdkVersion, compileSdkVersion to 34
