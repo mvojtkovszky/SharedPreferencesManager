@@ -16,34 +16,37 @@ def getPublicationName() {
     }
 }
 
-task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+tasks.register('javadocJar', Jar) {
+    dependsOn dokkaJavadoc
     archiveClassifier.set('javadoc')
     from "$buildDir/dokka/javadoc"
 }
 
-task sourcesJar(type: Jar) {
+tasks.register('sourcesJar', Jar) {
     archiveClassifier.set('sources')
     from android.sourceSets.main.java.srcDirs
 }
 
-publishing {
-    publications {
-        "${getPublicationName()}" (MavenPublication) {
-            groupId project.properties['groupId']
-            artifactId project.properties['artifactId']
-            version project.properties['versionName']
-            artifact getArtifactFilePath()
-            artifact javadocJar
-            artifact sourcesJar
+afterEvaluate {
+    publishing {
+        publications {
+            "${getPublicationName()}"(MavenPublication) {
+                groupId project.properties['groupId']
+                artifactId project.properties['artifactId']
+                version project.properties['versionName']
+                artifact getArtifactFilePath()
+                artifact javadocJar
+                artifact sourcesJar
 
-            // include project dependencies
-            pom.withXml {
-                def dependencies = asNode().appendNode('dependencies')
-                configurations.getByName("${getPublicationName()}CompileClasspath").getResolvedConfiguration().getFirstLevelModuleDependencies().each {
-                    def dependency = dependencies.appendNode('dependency')
-                    dependency.appendNode('groupId', it.moduleGroup)
-                    dependency.appendNode('artifactId', it.moduleName)
-                    dependency.appendNode('version', it.moduleVersion)
+                // include project dependencies
+                pom.withXml {
+                    def dependencies = asNode().appendNode('dependencies')
+                    configurations.getByName("${getPublicationName()}CompileClasspath").getResolvedConfiguration().getFirstLevelModuleDependencies().each {
+                        def dependency = dependencies.appendNode('dependency')
+                        dependency.appendNode('groupId', it.moduleGroup)
+                        dependency.appendNode('artifactId', it.moduleName)
+                        dependency.appendNode('version', it.moduleVersion)
+                    }
                 }
             }
         }

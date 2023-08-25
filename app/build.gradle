@@ -36,16 +36,6 @@ android {
     kotlinOptions {
         jvmTarget=project.properties['javaVersion']
     }
-
-    kotlin {
-        /* Jitpack pipeline will fail without this */
-        jvmToolchain(project.properties['javaVersion'] as Integer)
-    }
-
-    java {
-        /* Jitpack pipeline will fail without this */
-        toolchain.languageVersion.set(JavaLanguageVersion.of(project.properties['javaVersion']))
-    }
 }
 
 dependencies {
