@@ -29,6 +29,10 @@ android {
         jvmTarget=project.properties['javaVersion']
     }
 
+    kotlin {
+        jvmToolchain(17)
+    }
+
     buildTypes {
         release {
             minifyEnabled false
