@@ -30,7 +30,12 @@ android {
     }
 
     kotlin {
-        jvmToolchain(17)
+        /* Jitpack pipeline will fail without this */
+        jvmToolchain(project.properties['javaVersion'] as Integer)
+    }
+
+    java {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(project.properties['javaVersion'] as Integer))
     }
 
     buildTypes {
