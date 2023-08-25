@@ -35,7 +35,8 @@ android {
     }
 
     java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(project.properties['javaVersion'] as Integer))
+        /* Jitpack pipeline will fail without this */
+        toolchain.languageVersion.set(JavaLanguageVersion.of(project.properties['javaVersion']))
     }
 
     buildTypes {
