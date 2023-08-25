@@ -1,7 +1,8 @@
 # CHANGELOG
 
 ## 1.5.3 (TBD)
-*
+* bump Gradle plugin to 8.1.1, Serialization to 1.6.0
+* bump buildToolsVersion 34.0.0, targetSdkVersion, compileSdkVersion to 34
 
 ## 1.5.2 (2022-09-15)
 * remove threading in `setList` and `setObject` and 
