@@ -9,11 +9,12 @@ def getArtifactFilePath() {
 }
 
 def getPublicationName() {
-    if (isReleaseBuild()) {
+    return "release"
+    /*if (isReleaseBuild()) {
         return "release"
     } else {
         return "debug"
-    }
+    }*/
 }
 
 tasks.register('javadocJar', Jar) {
