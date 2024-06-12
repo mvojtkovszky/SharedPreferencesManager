@@ -6,8 +6,8 @@ import android.content.SharedPreferences
 
 /**
  * Implementation of [SharedPreferences] where data is persisted in memory only and omit using files.
- * Useful if you need to run tests without mocking the context or if you simply don't need to persist
- * data outside of application lifecycle.
+ * Useful if you don't need to persist data outside of application lifecycle
+ * or if you want to run tests without mocking the context.
  */
 class InMemorySharedPreferences: SharedPreferences {
 
