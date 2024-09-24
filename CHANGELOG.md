@@ -1,7 +1,7 @@
 # CHANGELOG
 
-## 1.6.0 (TBD)
-* Bump Gradle plugin to 8.4.2, Kotlin to 2.0.0, Serialization to 1.7.0
+## 1.5.7 (2024-09-24)
+* Bump Gradle plugin to 8.6.1, Kotlin to 2.0.20, Serialization to 1.7.3
 
 ## 1.5.6 (2024-01-26)
 * Bump Gradle plugin to 8.2.2, Kotlin to 1.9.22, Serialization to 1.6.2
