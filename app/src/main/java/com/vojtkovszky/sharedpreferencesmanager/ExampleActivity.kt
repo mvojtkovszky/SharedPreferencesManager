@@ -10,7 +10,7 @@ import kotlinx.serialization.json.Json
 
 class ExampleActivity : AppCompatActivity() {
 
-    companion object {
+    private companion object {
         private const val KEY_DOGGO = "KEY_DOGGO"
         private const val KEY_CHECKBOX = "KEY_CHECKBOX"
     }
@@ -24,14 +24,15 @@ class ExampleActivity : AppCompatActivity() {
         binding = ActivityExampleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // define SharedPreferences
         val sharedPreferences = applicationContext.getSharedPreferences("myCustomFileName", Context.MODE_PRIVATE)
+
+        // init SharedPreferencesManager
         preferencesManager = SharedPreferencesManager(
             sharedPreferences = sharedPreferences,
             json = Json { isLenient = true },
             errorListener = { it.printStackTrace() }
         )
-        // preferencesManager = SharedPreferencesManager(this)
-        // would work too, as other parameters are optional
 
         // populate doggo fields
         val doggo: Dog? = preferencesManager.getObject(KEY_DOGGO)
@@ -39,12 +40,12 @@ class ExampleActivity : AppCompatActivity() {
         binding.doggoBreed.setText(doggo?.breed)
         binding.doggoWeight.setText(doggo?.weightGrams?.toString())
 
-        // populate random field
+        // populate random checkbox field
         binding.randomCheckbox.isChecked = preferencesManager.getBoolean(KEY_CHECKBOX, false)
 
         // save changes
         binding.saveButton.setOnClickListener {
-            // save doggo based on edit texts
+            // save doggo based on EditText fields
             preferencesManager.setObject(KEY_DOGGO,
                 Dog(
                     name = binding.doggoName.text.toString(),
@@ -53,7 +54,7 @@ class ExampleActivity : AppCompatActivity() {
                 )
             )
 
-            // save checkbox state
+            // save checkbox state based on CheckBox field
             preferencesManager.setBoolean(KEY_CHECKBOX, binding.randomCheckbox.isChecked)
 
             // show success to user

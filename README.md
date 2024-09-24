@@ -58,6 +58,11 @@ fun remove(key: String)
 Note that `getObject`, `putObject`, `getList` and `putList` use Kotlin serialization, so `T` has to be
 annotated as `Serializable`, otherwise `SerializationException` will be thrown.
 
+Known objects or list of objects are cached in memory to avoid redundant deserialization:
+- Edit to object or list of objects will update the cache.
+- Retrieving object or list of objects will retrieve the cached copy if it exists.
+- for other functions, `SharedPreferences` uses in-memory caching for known values.
+
 
 ## Nice! How do I get started?
 Make sure root build.gradle repositories include JitPack

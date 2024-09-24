@@ -15,6 +15,11 @@ import kotlin.concurrent.thread
  * All put methods will automatically call [SharedPreferences.edit] concluded with
  * [SharedPreferences.apply].
  *
+ * All known objects or list of objects are cached in memory to avoid redundant deserialization:
+ * - Edit to object or list of objects will update the cache.
+ * - Retrieving object or list of objects will retrieve the cached copy if it exists.
+ * - for other functions, [SharedPreferences] uses in-memory caching for known values.
+ *
  * @param sharedPreferences provide your implementation of [SharedPreferences].
  * Usually it would be [Context.getSharedPreferences].
  * If persisting data in file is not desired, provide [InMemorySharedPreferences].
