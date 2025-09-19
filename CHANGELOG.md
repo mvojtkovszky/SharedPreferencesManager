@@ -1,7 +1,9 @@
 # CHANGELOG
 
-## 1.5.8 (TBD)
-* Bump buildToolsVersion to 35.0.0, compileSdkVersion and targetSdkVersion to 35
+## 1.5.8 (2025-09-19)
+* Bump Gradle plugin to 8.13.0, Kotlin to 2.2.0, Serialization to 1.9.0
+* Bump buildToolsVersion to 36.0.0, compileSdkVersion and targetSdkVersion to 36
+* Bump Java to 21
 
 ## 1.5.7 (2024-09-24)
 * Bump Gradle plugin to 8.6.1, Kotlin to 2.0.20, Serialization to 1.7.3
