@@ -1,9 +1,9 @@
 apply plugin: 'maven-publish'
 
-tasks.register('javadocJar', Jar) {
-    dependsOn dokkaJavadoc
+tasks.register('dokkaJavadocJar', Jar) {
+    dependsOn 'dokkaGeneratePublicationJavadoc'   // v2 task
     archiveClassifier.set('javadoc')
-    from "${rootProject.layout.buildDirectory}/dokka/javadoc"
+    from(layout.buildDirectory.dir('dokka/javadoc'))
 }
 
 afterEvaluate {
@@ -15,12 +15,8 @@ afterEvaluate {
                 groupId project.properties['groupId']
                 artifactId project.properties['artifactId']
                 version project.properties['versionName']
-                artifact javadocJar
+                artifact tasks.named('dokkaJavadocJar')
             }
         }
     }
-}
-
-artifacts {
-    archives javadocJar
 }

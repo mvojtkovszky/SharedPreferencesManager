@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlinx-serialization'
     id 'org.jetbrains.dokka'
+    id 'org.jetbrains.dokka-javadoc'
     id 'maven-publish'
 }
 
@@ -25,8 +26,10 @@ android {
         targetCompatibility project.properties['javaVersion']
     }
 
-    kotlinOptions {
-        jvmTarget=project.properties['javaVersion']
+    kotlin {
+        compilerOptions {
+            jvmTarget = properties['javaVersion']
+        }
     }
 
     buildTypes {
@@ -35,13 +38,17 @@ android {
         }
     }
 
-    dokkaHtml {
-
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
     }
+
+    dokkaHtml { }
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3" /* https://github.com/Kotlin/kotlinx.serialization */
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0" /* https://github.com/Kotlin/kotlinx.serialization */
 }
 
 apply from: "$rootDir/gradle-mvn-push.gradle"
